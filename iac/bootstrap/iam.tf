@@ -207,12 +207,20 @@ data "aws_iam_policy_document" "apply_permissions" {
   statement {
     # SecureString parameters are encrypted under the account's default
     # `alias/aws/ssm` KMS key. The env-sync step's ssm:GetParameter(s) call
-    # with WithDecryption=true needs kms:Decrypt against that key, but the
-    # condition pins it to exactly that alias so the apply role can never
-    # decrypt an unrelated KMS-encrypted resource elsewhere in the account.
-    sid       = "DecryptSsmSecureStrings"
-    effect    = "Allow"
-    actions   = ["kms:Decrypt"]
+    # with WithDecryption=true needs kms:Decrypt against that key, and
+    # `terraform apply` of environments/prod/ssm.tf's SecureString params
+    # (SESSION_SECRET, ADMIN_PASSWORD) needs Encrypt/GenerateDataKey* on
+    # write -- the condition pins all of it to exactly that alias so the
+    # apply role can never touch an unrelated KMS-encrypted resource
+    # elsewhere in the account.
+    sid    = "CryptSsmSecureStrings"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+    ]
     resources = ["*"]
 
     condition {
