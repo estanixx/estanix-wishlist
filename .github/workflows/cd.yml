@@ -1,0 +1,121 @@
+# Runs on every push to main: calls the shared ci.yml quality gate
+# (including tests/lib/reserve.test.ts against the real DynamoDB Local
+# service container), then -- only if CI passed -- assumes the scoped apply
+# role via OIDC and runs `terraform apply` against iac/environments/prod
+# ONLY (iac/bootstrap is admin-applied once, manually -- design.md's
+# Migration / Rollout, never re-applied by any workflow). Once the apply
+# succeeds, the same apply role is re-assumed to sync SSM -> Vercel env vars
+# (design.md Decision 8: one role covers both terraform apply and the
+# env-sync SSM read) and deploy to Vercel via the CLI. vercel.json disables
+# Vercel's own git auto-deploy for main, so this workflow is the sole
+# production-deploy path (SPEC.md section 2.1).
+#
+# `concurrency` on the terraform-apply job shares its group name with
+# pr.yml's plan job, on purpose -- see pr.yml's comment for why.
+name: cd
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+env:
+  TERRAFORM_VERSION: '1.11.4'
+
+jobs:
+  ci:
+    name: ci
+    uses: ./.github/workflows/ci.yml
+
+  terraform-apply:
+    name: terraform-apply
+    needs: ci
+    runs-on: ubuntu-latest
+    concurrency:
+      group: iac-terraform-state
+      cancel-in-progress: false
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (apply role)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_APPLY_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: terraform init (environments/prod)
+        env:
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+        run: ./iac/scripts/tf-init.sh
+
+      # `admin_password` (environments/prod/variables.tf, no default) MUST
+      # be the same real value already live in SSM ADMIN_PASSWORD, sourced
+      # from a GitHub secret -- not a placeholder. Passing a different value
+      # here would silently overwrite the live admin dashboard password on
+      # every push to main. This is a required manual secret (see README).
+      - name: terraform apply (environments/prod)
+        working-directory: iac/environments/prod
+        env:
+          TF_VAR_admin_password: ${{ secrets.ADMIN_PASSWORD }}
+        run: terraform apply -auto-approve -no-color -input=false
+
+  vercel-deploy:
+    name: vercel-deploy
+    needs: terraform-apply
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Re-assumes the apply role (design.md Decision 8) purely to read the
+      # SSM parameters environments/prod's terraform apply just wrote/kept
+      # current -- scripts/sync-env.mjs runs BEFORE the Vercel deploy step so
+      # any new/changed SSM param exists in Vercel before the app needs it.
+      - name: Configure AWS credentials (apply role, SSM read)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_APPLY_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Sync SSM parameters to Vercel (scoped upsert)
+        env:
+          SSM_PREFIX: /estanix-wishlist/prod
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: node scripts/sync-env.mjs
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings (production)
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build for deployment (production, with synced env)
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy prebuilt output (production)
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
