@@ -1,0 +1,172 @@
+name: ci
+
+# Reusable workflow only -- no direct trigger (`workflow_call` only). Called
+# by pr.yml (every PR against main) and cd.yml (always runs before
+# terraform apply on push to main), so both paths run the exact same
+# lint/typecheck/test/build + terraform fmt/validate/tflint/checkov steps
+# and can never drift apart (SPEC.md section 2.1). Never receives secrets.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  TERRAFORM_VERSION: '1.11.4'
+
+jobs:
+  app:
+    name: app
+    runs-on: ubuntu-latest
+    # tests/lib/reserve.test.ts (design.md's single highest-value test) needs
+    # a REAL DynamoDB Local instance -- design.md's Testing Strategy forbids
+    # mocking it, since a mock would happily pass the incorrect
+    # single-UpdateItem implementation design.md's Decision 2 rejected. This
+    # service mirrors docker-compose.yml's image; GitHub Actions' `services:`
+    # syntax has no `command:` key, so the `-inMemory -sharedDb` flags from
+    # docker-compose.yml can't be passed here -- the image's default
+    # file-backed mode is used instead, which is functionally equivalent for
+    # an ephemeral, single-job-lifetime container (the suite's own
+    # beforeAll/afterAll explicitly create/delete the test table regardless
+    # of persistence mode).
+    services:
+      dynamodb-local:
+        image: amazon/dynamodb-local:2.5.2
+        ports:
+          - 8000:8000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Wait for DynamoDB Local
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf -o /dev/null http://localhost:8000; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "DynamoDB Local did not become ready in time" >&2
+          exit 1
+
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive iac/
+
+  # `iac/bootstrap` is admin-applied only (never touched by any workflow's
+  # apply step) but is still fmt/validated here like any other root, so a
+  # change to it can't silently rot -- design.md's GitHub Actions Job Graph.
+  validate-matrix:
+    name: validate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        root:
+          - bootstrap
+          - environments/prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      # -backend=false: neither root needs real backend credentials to
+      # validate syntax/types. environments/prod has a real S3 backend, but
+      # still validates fine without initializing it.
+      - name: terraform init -backend=false
+        working-directory: iac/${{ matrix.root }}
+        run: terraform init -backend=false -input=false
+
+      - name: terraform validate
+        working-directory: iac/${{ matrix.root }}
+        run: terraform validate
+
+  # Gate job: GitHub renders each matrix leg above as its own check
+  # ("ci / validate-matrix (bootstrap)", etc.), so branch protection cannot
+  # require a single "ci / validate" from the matrix job directly. This job
+  # depends on every leg and only succeeds if all of them did, giving branch
+  # protection the single stable check name it needs.
+  validate:
+    name: validate
+    needs: validate-matrix
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check matrix result
+        run: |
+          if [ "${{ needs.validate-matrix.result }}" != "success" ]; then
+            echo "validate-matrix did not succeed: ${{ needs.validate-matrix.result }}"
+            exit 1
+          fi
+
+  tflint:
+    name: tflint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Init tflint plugins
+        run: tflint --init
+        working-directory: iac
+        env:
+          # Avoids GitHub API rate limiting when downloading the aws plugin.
+          GITHUB_TOKEN: ${{ github.token }}
+
+      # Recursive + default severity: any finding fails the step (blocking).
+      - name: tflint --recursive
+        working-directory: iac
+        run: tflint --recursive --format compact
+
+  checkov:
+    name: checkov
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install checkov
+        run: pip install checkov
+
+      # `.checkov.yml` (repo-root skip-list) does not exist yet. checkov's
+      # --config-file errors on a missing path, so it is only passed when
+      # the file is actually present -- the job itself is never made
+      # conditional on the file existing.
+      - name: Run checkov
+        run: |
+          if [ -f .checkov.yml ]; then
+            checkov --directory iac --framework terraform --config-file .checkov.yml --compact --download-external-modules true
+          else
+            checkov --directory iac --framework terraform --compact --download-external-modules true
+          fi
