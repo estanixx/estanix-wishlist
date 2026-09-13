@@ -28,21 +28,26 @@ function paramsOf(value: Record<string, string>) {
   return { params: Promise.resolve(value) };
 }
 
-type Handler = (request: Request, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>;
+// Every Route Handler below has a different `params` shape; this suite only
+// ever passes a superset of keys ({ wishId, optionId }) and asserts on
+// response.status, so a loosely-typed handler signature is the right tool
+// here -- not a real `any` leak into production code (test-only file).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Handler = (request: Request, ctx: { params: Promise<any> }) => Promise<Response>;
 
 // Every admin route + HTTP method, called with wishId/optionId placeholders
 // that are never reached because requireAuth() must short-circuit first.
 const routes: { name: string; handler: Handler }[] = [
-  { name: 'GET /api/admin/wishes', handler: wishesRoute.GET as unknown as Handler },
-  { name: 'POST /api/admin/wishes', handler: wishesRoute.POST as unknown as Handler },
+  { name: 'GET /api/admin/wishes', handler: wishesRoute.GET },
+  { name: 'POST /api/admin/wishes', handler: wishesRoute.POST },
   { name: 'GET /api/admin/wishes/:wishId', handler: wishRoute.GET },
   { name: 'PATCH /api/admin/wishes/:wishId', handler: wishRoute.PATCH },
   { name: 'DELETE /api/admin/wishes/:wishId', handler: wishRoute.DELETE },
   { name: 'POST /api/admin/wishes/:wishId/options', handler: optionsRoute.POST },
   { name: 'PATCH /api/admin/wishes/:wishId/options/:optionId', handler: optionRoute.PATCH },
   { name: 'DELETE /api/admin/wishes/:wishId/options/:optionId', handler: optionRoute.DELETE },
-  { name: 'POST /api/admin/reset-reservations', handler: resetRoute.POST as unknown as Handler },
-  { name: 'GET /api/admin/stats', handler: statsRoute.GET as unknown as Handler },
+  { name: 'POST /api/admin/reset-reservations', handler: resetRoute.POST },
+  { name: 'GET /api/admin/stats', handler: statsRoute.GET },
 ];
 
 describe('admin route authorization (threat matrix: absent/malformed/expired/tampered cookie)', () => {

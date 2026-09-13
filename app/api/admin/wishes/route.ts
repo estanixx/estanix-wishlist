@@ -27,7 +27,9 @@ type CreateWishBody = {
   options?: unknown;
 };
 
-function parseCreateWishBody(body: CreateWishBody | null): { title: string; description: string; oneIsEnough: boolean; reservable: boolean; options: CreateWishOptionInput[] } | null {
+function parseCreateWishBody(
+  body: CreateWishBody | null,
+): { title: string; description: string; oneIsEnough: boolean; reservable: boolean; options: CreateWishOptionInput[] } | null {
   if (!body || typeof body.title !== 'string' || !body.title.trim() || !Array.isArray(body.options)) return null;
 
   const options: CreateWishOptionInput[] = [];
