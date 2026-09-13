@@ -1,5 +1,6 @@
 # Local tooling caches — not project content
 .atl/*.local.*
+.codegraph/
 
 # Terraform
 **/.terraform/
