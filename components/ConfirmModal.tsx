@@ -1,0 +1,85 @@
+'use client';
+
+// components/ConfirmModal.tsx -- custom "¿Estás seguro?" confirm dialog,
+// spec.md §6.3: "custom modal/floating window, NOT native confirm()".
+// Deliberately a plain controlled overlay (not the native <dialog> element's
+// showModal()) so it renders in jsdom without a `not implemented` error and
+// stays trivially reusable for Phase 4's admin reset flow (design.md: "used
+// for both reserve and admin reset"), which needs the exact same
+// confirm/cancel shape with different copy.
+export type ConfirmModalProps = {
+  open: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  pending?: boolean;
+  /** When set, the modal switches to an error state: hides the confirm
+   * action (retrying a resolved reservation attempt is meaningless) and
+   * shows only a close button (spec.md: "show an error message ... refresh
+   * the page's reservation state"). */
+  error?: string | null;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+export function ConfirmModal({
+  open,
+  title = '¿Estás seguro?',
+  description,
+  confirmLabel = 'Sí',
+  cancelLabel = 'Volver',
+  pending = false,
+  error = null,
+  onConfirm,
+  onCancel,
+}: ConfirmModalProps) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-black/60 p-4" onClick={onCancel}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={error ? 'No se pudo reservar' : title}
+        className="w-full max-w-sm animate-scale-in rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl"
+        onClick={event => event.stopPropagation()}
+      >
+        <p className="text-base font-medium text-zinc-100">{error ? 'No se pudo reservar' : title}</p>
+        {description && !error && <p className="mt-2 text-sm text-zinc-400">{description}</p>}
+        {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+
+        <div className="mt-6 flex justify-end gap-3">
+          {error ? (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white"
+            >
+              Cerrar
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={pending}
+                className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-100 transition duration-200 hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {cancelLabel}
+              </button>
+              <button
+                type="button"
+                onClick={onConfirm}
+                disabled={pending}
+                className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {pending ? 'Reservando…' : confirmLabel}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
