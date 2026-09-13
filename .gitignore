@@ -1,0 +1,23 @@
+# Local tooling caches — not project content
+.atl/*.local.*
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Node (added ahead of Phase 1's Next.js app)
+node_modules/
+.next/
+.env
+.env.local
+.env*.local
+tsconfig.tsbuildinfo
