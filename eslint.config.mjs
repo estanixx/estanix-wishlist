@@ -16,7 +16,10 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
-    ignores: ['.next/**', 'node_modules/**', 'coverage/**'],
+    // next-env.d.ts's triple-slash references are Next.js's own generated
+    // content (re-written by `next dev`/`next build`), not authored code --
+    // see https://nextjs.org/docs/app/api-reference/config/typescript.
+    ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'next-env.d.ts'],
   },
 ];
 
