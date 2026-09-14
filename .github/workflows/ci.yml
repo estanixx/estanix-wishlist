@@ -46,8 +46,13 @@ jobs:
 
       - name: Wait for DynamoDB Local
         run: |
+          # DynamoDB Local answers a bare GET / with HTTP 400 (it expects a
+          # POST with the AWS JSON protocol headers) -- `curl -f` treats any
+          # non-2xx as failure, so it never succeeds even once the server is
+          # healthy. Drop -f: without it curl only fails on a connection-level
+          # error, which is exactly "is anything listening on :8000 yet".
           for i in $(seq 1 30); do
-            if curl -sf -o /dev/null http://localhost:8000; then
+            if curl -s -o /dev/null http://localhost:8000; then
               exit 0
             fi
             sleep 1
