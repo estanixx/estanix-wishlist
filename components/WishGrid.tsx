@@ -6,7 +6,7 @@ import { WishCard } from './WishCard';
 // SPEC.md §8's responsive requirement).
 export function WishGrid({ wishes }: { wishes: WishWithOptions[] }) {
   if (wishes.length === 0) {
-    return <p className="py-16 text-center text-sm text-zinc-500">Todavía no hay deseos para mostrar.</p>;
+    return <p className="py-16 text-center text-sm text-foreground-faint">Todavía no hay deseos para mostrar.</p>;
   }
 
   return (

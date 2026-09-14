@@ -3,12 +3,12 @@
 // route-level Suspense loading state) while listWishesWithOptions() resolves.
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded-md bg-zinc-800 ${className}`} />;
+  return <div className={`animate-pulse rounded-md bg-surface-strong ${className}`} />;
 }
 
 export function WishCardSkeleton() {
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface/60 p-4">
       <Skeleton className="h-40 w-full" />
       <Skeleton className="mt-4 h-5 w-3/4" />
       <Skeleton className="mt-2 h-4 w-full" />

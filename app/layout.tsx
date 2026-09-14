@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       {/* Dark theme baseline (SPEC.md §8: dark, minimalist) -- Phase 2 is the
           first page to actually render content, so this is where the root
           background/foreground get set. */}
-      <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased">{children}</body>
+      <body className="min-h-screen bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }

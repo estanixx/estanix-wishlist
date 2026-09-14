@@ -42,19 +42,19 @@ export function ConfirmModal({
         role="dialog"
         aria-modal="true"
         aria-label={error ? 'No se pudo reservar' : title}
-        className="w-full max-w-sm animate-scale-in rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl"
+        className="w-full max-w-sm animate-scale-in rounded-2xl border border-border bg-surface p-6 shadow-xl"
         onClick={event => event.stopPropagation()}
       >
-        <p className="text-base font-medium text-zinc-100">{error ? 'No se pudo reservar' : title}</p>
-        {description && !error && <p className="mt-2 text-sm text-zinc-400">{description}</p>}
-        {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+        <p className="text-base font-medium text-foreground">{error ? 'No se pudo reservar' : title}</p>
+        {description && !error && <p className="mt-2 text-sm text-foreground-muted">{description}</p>}
+        {error && <p className="mt-2 text-sm text-danger">{error}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
           {error ? (
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white"
+              className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 hover:bg-accent-hover"
             >
               Cerrar
             </button>
@@ -64,7 +64,7 @@ export function ConfirmModal({
                 type="button"
                 onClick={onCancel}
                 disabled={pending}
-                className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-100 transition duration-200 hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-border-strong px-4 py-2 text-sm font-medium text-foreground transition duration-200 hover:border-border-hover hover:bg-surface-strong disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {cancelLabel}
               </button>
@@ -72,7 +72,7 @@ export function ConfirmModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={pending}
-                className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {pending ? 'Reservando…' : confirmLabel}
               </button>

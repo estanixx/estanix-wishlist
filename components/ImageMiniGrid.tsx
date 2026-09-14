@@ -12,13 +12,13 @@ type PreviewOption = Pick<Option, 'id' | 'imageUrl' | 'title'>;
 
 export function ImageMiniGrid({ options }: { options: PreviewOption[] }) {
   if (options.length === 0) {
-    return <div className="grid h-40 w-full place-items-center bg-zinc-800 text-sm text-zinc-500">Sin opciones todavía</div>;
+    return <div className="grid h-40 w-full place-items-center bg-surface-strong text-sm text-foreground-faint">Sin opciones todavía</div>;
   }
 
   if (options.length === 1) {
     const [option] = options;
     return (
-      <div className="h-40 w-full overflow-hidden bg-zinc-800">
+      <div className="h-40 w-full overflow-hidden bg-surface-strong">
         {/* eslint-disable-next-line @next/next/no-img-element -- external admin-provided URLs, no image-optimization domain allowlist */}
         <img
           src={option.imageUrl}
@@ -34,11 +34,11 @@ export function ImageMiniGrid({ options }: { options: PreviewOption[] }) {
   const remaining = options.length - preview.length;
 
   return (
-    <div className="grid h-40 w-full grid-cols-2 gap-0.5 overflow-hidden bg-zinc-950">
+    <div className="grid h-40 w-full grid-cols-2 gap-0.5 overflow-hidden bg-background">
       {preview.map((option, index) => {
         const isLastTile = index === preview.length - 1 && remaining > 0;
         return (
-          <div key={option.id} className="relative h-full w-full overflow-hidden bg-zinc-800">
+          <div key={option.id} className="relative h-full w-full overflow-hidden bg-surface-strong">
             {/* eslint-disable-next-line @next/next/no-img-element -- external admin-provided URLs, no image-optimization domain allowlist */}
             <img src={option.imageUrl} alt={option.title} loading="lazy" className="h-full w-full object-cover" />
             {isLastTile && (

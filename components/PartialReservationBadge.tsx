@@ -7,7 +7,7 @@ import { CircleDot } from 'lucide-react';
 
 export function PartialReservationBadge() {
   return (
-    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/25">
+    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-warning-accent/10 px-2.5 py-1 text-xs font-medium text-warning ring-1 ring-inset ring-warning-accent/25">
       <CircleDot className="h-3.5 w-3.5" aria-hidden="true" />
       algunas opciones reservadas
     </span>

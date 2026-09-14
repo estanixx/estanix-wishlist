@@ -17,20 +17,20 @@ export function WishDetail({ wish }: { wish: WishWithOptions }) {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">{wish.title}</h1>
-        <p className="mt-2 text-base leading-relaxed text-zinc-400">{wish.description}</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{wish.title}</h1>
+        <p className="mt-2 text-base leading-relaxed text-foreground-muted">{wish.description}</p>
       </header>
 
       {fullyReserved && (
         <div
           role="status"
-          className="animate-fade-in rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300"
+          className="animate-fade-in rounded-xl border border-danger-accent/30 bg-danger-accent/10 px-4 py-3 text-sm font-medium text-danger-hover"
         >
           Ya reservado — alguien ya reservó este deseo.
         </div>
       )}
 
-      {wish.options.length === 0 && <p className="text-sm text-zinc-500">Todavía no hay opciones para este deseo.</p>}
+      {wish.options.length === 0 && <p className="text-sm text-foreground-faint">Todavía no hay opciones para este deseo.</p>}
 
       {wish.options.length === 1 && <SingleOptionLayout wish={wish} option={wish.options[0]} />}
 

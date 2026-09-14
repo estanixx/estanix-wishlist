@@ -12,7 +12,7 @@ export function ReservedBand({ label = 'Ya reservado' }: { label?: string }) {
     <div
       role="status"
       aria-label={label}
-      className="pointer-events-none absolute -right-11 top-5 w-40 rotate-45 animate-fade-in bg-red-600 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-white shadow-md"
+      className="pointer-events-none absolute -right-11 top-5 w-40 rotate-45 animate-fade-in bg-danger-solid py-1 text-center text-[11px] font-bold uppercase tracking-wide text-white shadow-md"
     >
       {label}
     </div>
