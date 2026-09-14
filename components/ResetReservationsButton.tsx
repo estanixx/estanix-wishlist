@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { RotateCcw } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
 // components/ResetReservationsButton.tsx -- "Resetear reservaciones"
@@ -41,8 +42,9 @@ export function ResetReservationsButton() {
           setError(null);
           setOpen(true);
         }}
-        className="rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-400 transition duration-200 hover:border-red-500 hover:bg-red-500/10"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-danger-accent/40 px-4 py-2 text-sm font-medium text-danger transition duration-200 hover:border-danger-accent hover:bg-danger-accent/10"
       >
+        <RotateCcw className="h-4 w-4" aria-hidden="true" />
         Resetear reservaciones
       </button>
       <ConfirmModal

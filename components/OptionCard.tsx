@@ -19,9 +19,9 @@ export function OptionCard({ wish, option }: { wish: Wish; option: Option }) {
   const buttonDisabled = showButton && !canReserveOption(wish, option);
 
   return (
-    <div className="relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60">
+    <div className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface/60">
       {showBand && <ReservedBand label="Opción reservada" />}
-      <a href={option.link} target="_blank" rel="noopener noreferrer" className="block h-48 w-full overflow-hidden bg-zinc-800">
+      <a href={option.link} target="_blank" rel="noopener noreferrer" className="block h-48 w-full overflow-hidden bg-surface-strong">
         {/* eslint-disable-next-line @next/next/no-img-element -- external admin-provided URLs, no image-optimization domain allowlist */}
         <img
           src={option.imageUrl}
@@ -31,8 +31,8 @@ export function OptionCard({ wish, option }: { wish: Wish; option: Option }) {
         />
       </a>
       <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="text-lg font-semibold text-zinc-100">{option.title}</h3>
-        <p className="flex-1 text-sm leading-relaxed text-zinc-400">{option.description}</p>
+        <h3 className="text-lg font-semibold text-foreground">{option.title}</h3>
+        <p className="flex-1 text-sm leading-relaxed text-foreground-muted">{option.description}</p>
         <div className="mt-2 flex flex-wrap gap-3">
           <ExternalLinkButton href={option.link} />
           {showButton && <ReserveButton wishId={wish.id} optionId={option.id} disabled={buttonDisabled} />}

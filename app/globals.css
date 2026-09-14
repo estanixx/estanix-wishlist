@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Design tokens (SPEC.md §8: dark theme, minimalist, reduced palette with
+ * one accent color). Single dark theme only -- no light-mode toggle exists
+ * in this app, so these live at :root rather than under a `.dark` scope.
+ * Values are RGB triplets (not hex) so Tailwind's `rgb(var(--x) / <alpha>)`
+ * pattern in tailwind.config.ts keeps opacity modifiers (`bg-surface/60`)
+ * working exactly like the ad-hoc `bg-zinc-900/60` classes they replace.
+ */
+:root {
+  --color-background: 9 9 11; /* zinc-950 */
+  --color-surface: 24 24 27; /* zinc-900 */
+  --color-surface-strong: 39 39 42; /* zinc-800 */
+
+  --color-border: 39 39 42; /* zinc-800 */
+  --color-border-strong: 63 63 70; /* zinc-700 */
+  --color-border-hover: 113 113 122; /* zinc-500 */
+
+  --color-foreground: 244 244 245; /* zinc-100 */
+  --color-foreground-strong: 228 228 231; /* zinc-200 */
+  --color-foreground-secondary: 212 212 216; /* zinc-300 */
+  --color-foreground-muted: 161 161 170; /* zinc-400 */
+  --color-foreground-faint: 113 113 122; /* zinc-500 */
+
+  /* Single accent: a high-contrast neutral (near-white), not a hue -- this
+     is the look Phases 2-4 already shipped for every primary action
+     (WishCard CTA, ReserveButton, form submits, login). Tokenizing it here
+     keeps that exact visual identity instead of introducing a new color. */
+  --color-accent: 244 244 245; /* zinc-100 */
+  --color-accent-hover: 255 255 255; /* white */
+  --color-accent-foreground: 24 24 27; /* zinc-900 */
+
+  --color-danger: 248 113 113; /* red-400 */
+  --color-danger-hover: 252 165 165; /* red-300 */
+  --color-danger-accent: 239 68 68; /* red-500 */
+  --color-danger-solid: 220 38 38; /* red-600 */
+
+  --color-warning: 251 191 36; /* amber-400 */
+  --color-warning-accent: 245 158 11; /* amber-500 */
+}

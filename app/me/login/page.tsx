@@ -18,8 +18,8 @@ export default async function AdminLoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <header className="text-center">
-          <h1 className="text-xl font-semibold text-zinc-100">Panel de administración</h1>
-          <p className="mt-1 text-sm text-zinc-400">Ingresá la contraseña para continuar.</p>
+          <h1 className="text-xl font-semibold text-foreground">Panel de administración</h1>
+          <p className="mt-1 text-sm text-foreground-muted">Ingresá la contraseña para continuar.</p>
         </header>
         <LoginForm />
       </div>

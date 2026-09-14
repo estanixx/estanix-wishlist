@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Plus, Pencil } from 'lucide-react';
 import { requirePageSession } from '@/lib/session-guard';
 import { getVisits, listWishesWithOptions } from '@/lib/wish-repository';
 import { StatsPanel, type ReservedStatEntry } from '@/components/StatsPanel';
@@ -39,10 +40,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">Panel de administración</h1>
-          <p className="mt-1 text-sm text-zinc-400">Gestioná los deseos y sus opciones.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Panel de administración</h1>
+          <p className="mt-1 text-sm text-foreground-muted">Gestioná los deseos y sus opciones.</p>
         </div>
         <LogoutButton />
       </header>
@@ -52,32 +53,34 @@ export default async function AdminDashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/me/wishes/new"
-          className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 hover:bg-accent-hover"
         >
-          + Nuevo deseo
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Nuevo deseo
         </Link>
         <ResetReservationsButton />
       </div>
 
       <section className="flex flex-col gap-4">
-        {wishes.length === 0 && <p className="py-10 text-center text-sm text-zinc-500">Todavía no hay deseos.</p>}
+        {wishes.length === 0 && <p className="py-10 text-center text-sm text-foreground-faint">Todavía no hay deseos.</p>}
 
         {wishes.map(wish => (
           <article
             key={wish.id}
-            className="flex flex-col gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-2xl border border-border bg-surface/60 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <h2 className="text-base font-semibold text-zinc-100">{wish.title}</h2>
-              <p className="mt-1 text-sm text-zinc-400">
+              <h2 className="text-base font-semibold text-foreground">{wish.title}</h2>
+              <p className="mt-1 text-sm text-foreground-muted">
                 {wish.options.length} {wish.options.length === 1 ? 'opción' : 'opciones'} ·{' '}
                 {wish.oneIsEnough ? 'una alcanza' : 'todas disponibles'} · {wish.reservable ? 'reservable' : 'no reservable'}
               </p>
             </div>
             <Link
               href={`/me/wishes/${wish.id}/edit`}
-              className="self-start rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-100 transition duration-200 hover:border-zinc-500 hover:bg-zinc-800 sm:self-auto"
+              className="inline-flex items-center gap-1.5 self-start rounded-lg border border-border-strong px-4 py-2 text-sm font-medium text-foreground transition duration-200 hover:border-border-hover hover:bg-surface-strong sm:self-auto"
             >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
               Editar
             </Link>
           </article>

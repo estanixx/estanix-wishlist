@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Plus, Save, Trash2 } from 'lucide-react';
 import type { WishWithOptions } from '@/lib/types';
 import { MAX_OPTIONS_PER_WISH } from '@/lib/validation';
 import { canAddOption, validateWishForm } from '@/lib/wish-form-validation';
@@ -179,66 +180,67 @@ export function WishForm({ mode, wish }: { mode: WishFormMode; wish?: WishWithOp
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-300">Título</span>
+        <span className="font-medium text-foreground-secondary">Título</span>
         <input
           value={title}
           onChange={event => setTitle(event.target.value)}
           required
           disabled={pending}
-          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-zinc-500"
+          className="rounded-lg border border-border-strong bg-background px-3 py-2 text-foreground outline-none focus:border-border-hover"
         />
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-300">Descripción</span>
+        <span className="font-medium text-foreground-secondary">Descripción</span>
         <textarea
           value={description}
           onChange={event => setDescription(event.target.value)}
           rows={3}
           disabled={pending}
-          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-zinc-500"
+          className="rounded-lg border border-border-strong bg-background px-3 py-2 text-foreground outline-none focus:border-border-hover"
         />
       </label>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-8">
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className="flex items-center gap-2 text-sm text-foreground-secondary">
           <input
             type="checkbox"
             checked={oneIsEnough}
             onChange={event => setOneIsEnough(event.target.checked)}
             disabled={pending}
-            className="h-4 w-4 rounded border-zinc-700 bg-zinc-950"
+            className="h-4 w-4 rounded border-border-strong bg-background"
           />
           Con una opción alcanza
         </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className="flex items-center gap-2 text-sm text-foreground-secondary">
           <input
             type="checkbox"
             checked={reservable}
             onChange={event => setReservable(event.target.checked)}
             disabled={pending}
-            className="h-4 w-4 rounded border-zinc-700 bg-zinc-950"
+            className="h-4 w-4 rounded border-border-strong bg-background"
           />
           Reservable
         </label>
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-300">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-medium text-foreground-secondary">
             Opciones ({options.length}/{MAX_OPTIONS_PER_WISH})
           </h2>
           <button
             type="button"
             onClick={addOption}
             disabled={pending || !canAddOption(options.length)}
-            className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-100 transition duration-200 hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-foreground transition duration-200 hover:border-border-hover hover:bg-surface-strong disabled:cursor-not-allowed disabled:opacity-50"
           >
-            + Agregar opción
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Agregar opción
           </button>
         </div>
 
-        {options.length === 0 && <p className="text-sm text-zinc-500">Todavía no hay opciones.</p>}
+        {options.length === 0 && <p className="text-sm text-foreground-faint">Todavía no hay opciones.</p>}
 
         {options.map((option, index) => (
           <OptionForm
@@ -251,14 +253,15 @@ export function WishForm({ mode, wish }: { mode: WishFormMode; wish?: WishWithOp
         ))}
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <Save className="h-4 w-4" aria-hidden="true" />
           {pending ? 'Guardando…' : 'Guardar'}
         </button>
 
@@ -267,8 +270,9 @@ export function WishForm({ mode, wish }: { mode: WishFormMode; wish?: WishWithOp
             type="button"
             onClick={() => setDeleteOpen(true)}
             disabled={pending}
-            className="rounded-lg border border-red-500/40 px-4 py-2 text-sm font-medium text-red-400 transition duration-200 hover:border-red-500 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-danger-accent/40 px-4 py-2 text-sm font-medium text-danger transition duration-200 hover:border-danger-accent hover:bg-danger-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
             Eliminar deseo
           </button>
         )}

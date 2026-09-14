@@ -20,15 +20,15 @@ export function WishCard({ wish }: { wish: WishWithOptions }) {
   return (
     <Link
       href={`/shared/${wish.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 transition duration-200 ease-out hover:-translate-y-1 hover:border-zinc-700 hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-100"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface/60 transition duration-200 ease-out hover:-translate-y-1 hover:border-border-strong hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {fullyReserved && <ReservedBand />}
       <ImageMiniGrid options={wish.options} />
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-1 text-lg font-semibold text-zinc-100">{wish.title}</h3>
-        <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-zinc-400">{wish.description}</p>
+        <h3 className="line-clamp-1 text-lg font-semibold text-foreground">{wish.title}</h3>
+        <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-foreground-muted">{wish.description}</p>
         {partiallyReserved && <PartialReservationBadge />}
-        <span className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 group-hover:bg-white">
+        <span className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 group-hover:bg-accent-hover">
           Ver detalles
           <ArrowRight className="h-4 w-4 transition duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
         </span>

@@ -16,13 +16,13 @@ export function SingleOptionLayout({ wish, option }: { wish: Wish; option: Optio
   const buttonDisabled = showButton && !canReserveOption(wish, option);
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 sm:flex-row">
+    <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-surface/60 sm:flex-row">
       {showBand && <ReservedBand label="Opción reservada" />}
       <a
         href={option.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="block h-56 w-full shrink-0 overflow-hidden bg-zinc-800 sm:h-auto sm:w-72"
+        className="block h-56 w-full shrink-0 overflow-hidden bg-surface-strong sm:h-auto sm:w-72"
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- external admin-provided URLs, no image-optimization domain allowlist */}
         <img
@@ -33,7 +33,7 @@ export function SingleOptionLayout({ wish, option }: { wish: Wish; option: Optio
         />
       </a>
       <div className="flex flex-1 flex-col gap-3 p-4 sm:py-6 sm:pl-0 sm:pr-6">
-        <p className="text-base leading-relaxed text-zinc-300">{option.description}</p>
+        <p className="text-base leading-relaxed text-foreground-secondary">{option.description}</p>
         <div className="mt-auto flex flex-wrap gap-3">
           <ExternalLinkButton href={option.link} />
           {showButton && <ReserveButton wishId={wish.id} optionId={option.id} disabled={buttonDisabled} />}

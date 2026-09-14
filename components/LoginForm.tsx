@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { LogIn } from 'lucide-react';
 
 // components/LoginForm.tsx -- /me/login (spec.md `admin-auth`). POSTs
 // {password} to /api/admin/login; on 200 the HMAC-signed session cookie is
@@ -40,9 +41,9 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6">
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 rounded-2xl border border-border bg-surface/60 p-6">
       <label htmlFor="admin-password" className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-zinc-300">Contraseña</span>
+        <span className="font-medium text-foreground-secondary">Contraseña</span>
         <input
           id="admin-password"
           name="password"
@@ -51,17 +52,18 @@ export function LoginForm() {
           onChange={event => setPassword(event.target.value)}
           required
           autoFocus
-          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-zinc-500"
+          className="rounded-lg border border-border-strong bg-background px-3 py-2 text-foreground outline-none focus:border-border-hover"
         />
       </label>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition duration-200 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
       >
+        <LogIn className="h-4 w-4" aria-hidden="true" />
         {pending ? 'Ingresando…' : 'Ingresar'}
       </button>
     </form>

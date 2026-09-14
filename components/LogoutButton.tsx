@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 
 // components/LogoutButton.tsx -- spec.md's "logout action" for /me. Not in
 // tasks.md's literal component list -- same justified addition pattern as
@@ -20,8 +21,9 @@ export function LogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-300 transition duration-200 hover:border-zinc-500 hover:bg-zinc-800"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-foreground-secondary transition duration-200 hover:border-border-hover hover:bg-surface-strong"
     >
+      <LogOut className="h-4 w-4" aria-hidden="true" />
       Cerrar sesión
     </button>
   );
