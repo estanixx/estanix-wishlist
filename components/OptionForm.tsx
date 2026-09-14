@@ -1,5 +1,7 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
+
 // components/OptionForm.tsx -- one option's editable fields inside
 // WishForm's dynamic options list (spec.md §7: "each option: title,
 // description, imageUrl, link... addable/removable before submit"). Purely
@@ -32,7 +34,7 @@ export function OptionForm({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface/40 p-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Título" value={value.title} onChange={next => set('title', next)} disabled={disabled} required />
         <Field
@@ -57,8 +59,9 @@ export function OptionForm({
         type="button"
         onClick={onRemove}
         disabled={disabled}
-        className="self-start text-sm font-medium text-red-400 transition duration-200 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex w-fit items-center gap-1.5 self-start text-sm font-medium text-danger transition duration-200 hover:text-danger-hover disabled:cursor-not-allowed disabled:opacity-50"
       >
+        <Trash2 className="h-4 w-4" aria-hidden="true" />
         Quitar opción
       </button>
     </div>
@@ -82,7 +85,7 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
-      <span className="font-medium text-zinc-300">{label}</span>
+      <span className="font-medium text-foreground-secondary">{label}</span>
       <input
         type="text"
         value={value}
@@ -90,7 +93,7 @@ function Field({
         onChange={event => onChange(event.target.value)}
         disabled={disabled}
         required={required}
-        className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg border border-border-strong bg-background px-3 py-2 text-foreground outline-none focus:border-border-hover disabled:cursor-not-allowed disabled:opacity-50"
       />
     </label>
   );
