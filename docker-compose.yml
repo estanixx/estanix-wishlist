@@ -1,0 +1,12 @@
+# DynamoDB Local, for tests/lib/reserve.test.ts (and any future integration
+# suite against the real access patterns in design.md). Mocking DynamoDB for
+# the reserve path would be actively misleading -- the whole design rests on
+# real ConditionExpression / TransactWriteItems semantics (design.md's
+# Testing Strategy). Start it with `npm run dynamodb:up` before `npm test`.
+
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:2.5.2
+    ports:
+      - '8000:8000'
+    command: ['-jar', 'DynamoDBLocal.jar', '-inMemory', '-sharedDb']
