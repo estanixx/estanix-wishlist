@@ -35,6 +35,7 @@ with admin AWS credentials active:
    terraform init
    terraform apply
    ```
+
    Review the plan before confirming. Record the outputs:
    `plan_role_arn`, `apply_role_arn`, `state_bucket_name`, `app_user_name`.
    `app_user_access_key_id` is marked sensitive — reveal only if needed with
@@ -42,6 +43,7 @@ with admin AWS credentials active:
 
 2. Publish the non-secret outputs as GitHub repo variables (ARNs are not
    credentials — safe as variables on a private repo):
+
    ```bash
    gh variable set TF_STATE_BUCKET    --body "$(terraform output -raw state_bucket_name)"
    gh variable set AWS_PLAN_ROLE_ARN  --body "$(terraform output -raw plan_role_arn)"
@@ -58,11 +60,13 @@ with admin AWS credentials active:
 
 4. Verify the handoff locally, before CI ever depends on it (once
    `environments/prod/` exists in Phase 1):
+
    ```bash
    cd ../environments/prod
    ../../scripts/tf-init.sh
    terraform plan
    ```
+
    A successful `plan` here proves the shared bucket and `use_lockfile`
    work end to end for this project's state key.
 

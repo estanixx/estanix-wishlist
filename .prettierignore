@@ -5,3 +5,8 @@ coverage
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+
+# Not app source: the user's own original spec doc and SDD tooling
+# metadata, neither of which this project's formatting rules govern.
+SPEC.md
+.atl/
