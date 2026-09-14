@@ -18,8 +18,10 @@ export default async function SharedPage() {
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <VisitCounterEffect />
       <header className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Lista de deseos</h1>
-        <p className="mt-1 text-sm text-foreground-muted">Elegí un regalo y reservalo para que nadie más lo repita.</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Lista de deseos de Juanes</h1>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Elige un regalo y reservalo para que nadie más lo repita. Muchas gracias por tomarte el tiempo 😁
+        </p>
       </header>
       <WishGrid wishes={wishes} />
     </main>
