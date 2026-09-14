@@ -1,0 +1,41 @@
+framework:
+  - terraform
+directory:
+  - iac
+compact: true
+download-external-modules: true
+skip-check:
+  # Permission-boundary policies (bootstrap/iam.tf's apply_boundary and
+  # plan_permissions, bootstrap/app-user.tf's app_user_boundary)
+  # intentionally use broad Allow statements narrowed by explicit Deny
+  # statements underneath -- that's how IAM permission boundaries work.
+  # Checkov has several overlapping checks for the same "wildcard Allow"
+  # shape; none of them can see the Deny layer, so they all flag the
+  # Allow half in isolation.
+  - CKV_AWS_1   # full "*-*" administrative privileges
+  - CKV_AWS_49  # "*" as a statement's actions
+  - CKV_AWS_107 # credentials exposure
+  - CKV_AWS_108 # data exfiltration
+  - CKV_AWS_109 # permissions management / resource exposure without constraints
+  - CKV_AWS_110 # privilege escalation
+  - CKV_AWS_111 # write access without constraints
+  - CKV_AWS_356 # "*" as a statement's resource
+  - CKV2_AWS_40 # full IAM privileges
+
+  # DynamoDB table and SSM parameters use the account's default AWS-managed
+  # KMS key, not a project-specific Customer Managed Key. A dedicated CMK is
+  # real ongoing cost/complexity (rotation, key policy, cross-account access
+  # if ever needed) with no meaningful security gain for a single-admin
+  # personal wishlist app -- accepted tradeoff for this project's scale.
+  - CKV_AWS_119  # DynamoDB CMK encryption
+  - CKV_AWS_337  # SSM parameters using KMS CMK
+  - CKV2_AWS_34  # SSM parameter encrypted (CMK-specific check)
+
+  # `estanix-wishlist-app` is a single IAM user that exists for exactly one
+  # reason: Vercel's serverless runtime isn't AWS and can't assume an OIDC
+  # role, so it needs long-lived static credentials (design.md's own
+  # documented tradeoff). SSO is not an option for a machine credential, and
+  # putting a group in front of a group-of-one adds bureaucracy with no
+  # real access-management benefit at this project's scale.
+  - CKV_AWS_273 # access controlled through SSO, not IAM users
+  - CKV_AWS_40  # IAM policies attached only to groups or roles
