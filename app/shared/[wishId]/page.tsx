@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getWishWithOptions } from '@/lib/wish-repository';
 import { VisitCounterEffect } from '@/components/VisitCounterEffect';
@@ -23,6 +25,10 @@ export default async function WishDetailPage({ params }: { params: Promise<{ wis
           as /shared, so a visitor who lands here first is still counted
           exactly once. */}
       <VisitCounterEffect />
+      <Link href="/shared" className="mb-6 inline-flex items-center gap-1.5 text-sm text-foreground-muted transition hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Volver a la lista
+      </Link>
       <WishDetail wish={wish} />
     </main>
   );
